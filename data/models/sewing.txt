@@ -1,0 +1,12 @@
+#DownloadModelFormat:   OBJ
+#GeometryFile:          sewing.obj
+#MaterialFile:          sewing.mtl
+#PreviewFile:
+#OtherFiles:
+#DownloadedFromURL:     https://sketchfab.com/3d-models/sewing-machine-8dbfa7985bf149058bb9e1140dd067d4
+#DateOfDownload:        23.5.2020
+#CreatedBy:
+#CreatedIn:
+#UploadedBy:            Max Wittig
+#Description:
+#NumberOfPolygons:      339

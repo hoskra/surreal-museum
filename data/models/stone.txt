@@ -1,0 +1,12 @@
+#DownloadModelFormat:   OBJ
+#GeometryFile:          stone_x.obj
+#MaterialFile:          stone_x.mtl
+#PreviewFile:
+#OtherFiles:
+#DownloadedFromURL:     https://sketchfab.com/3d-models/stone-door-baalbek-6a536d37731740f49363794c531e8b95
+#DateOfDownload:        13.5.2020
+#CreatedBy:
+#CreatedIn:
+#UploadedBy:            Kisielev Mikhail
+#Description:           The doorway is still in the modeling process. The source was the gates of the Temple of Bacchus in Baalbek.
+#NumberOfPolygons:      6.1k

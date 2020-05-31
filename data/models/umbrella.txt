@@ -1,0 +1,12 @@
+#DownloadModelFormat:   OBJ
+#GeometryFile:          umbrella.obj
+#MaterialFile:          umbrella.mtl
+#PreviewFile:
+#OtherFiles:
+#DownloadedFromURL:     https://sketchfab.com/3d-models/umbrella-798ffbb44f334de79b6f7185d762cce0
+#DateOfDownload:        23.5.2020
+#CreatedBy:
+#CreatedIn:
+#UploadedBy:            Individualist
+#Description:
+#NumberOfPolygons:      85.4k

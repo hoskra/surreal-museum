@@ -1,0 +1,12 @@
+#DownloadModelFormat:   OBJ
+#GeometryFile:          whale.obj
+#MaterialFile:          whale.mtl
+#PreviewFile:
+#OtherFiles:
+#DownloadedFromURL:     https://sketchfab.com/3d-models/game-ready-humpback-whale-da07e3ff73914ff28d2b8cf9da794036
+#DateOfDownload:        27.5.2020
+#CreatedBy:
+#CreatedIn:
+#UploadedBy:            Allie2k
+#Description:
+#NumberOfPolygons:      5k

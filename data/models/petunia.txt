@@ -1,0 +1,12 @@
+#DownloadModelFormat:   OBJ
+#GeometryFile:          petunia.obj
+#MaterialFile:          petunia.mtl
+#PreviewFile:
+#OtherFiles:
+#DownloadedFromURL:     https://sketchfab.com/3d-models/flowers-petunia-purple-577c0135365045eaba9af7a9fe58d867
+#DateOfDownload:        27.5.2020
+#CreatedBy:
+#CreatedIn:
+#UploadedBy:            Kisielev Mikhail
+#Description:
+#NumberOfPolygons:      397.3k

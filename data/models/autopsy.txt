@@ -1,0 +1,12 @@
+#DownloadModelFormat:   OBJ
+#GeometryFile:          autopsy_x.obj
+#MaterialFile:          autopsy_x.mtl
+#PreviewFile:
+#OtherFiles:
+#DownloadedFromURL:     https://www.cgtrader.com/items/2324068/download-page#
+#DateOfDownload:        23.5.2020
+#CreatedBy:
+#CreatedIn:
+#UploadedBy:
+#Description:
+#NumberOfPolygons:

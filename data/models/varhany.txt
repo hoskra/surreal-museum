@@ -1,0 +1,12 @@
+#DownloadModelFormat: OBJ
+#GeometryFile: varhany.obj
+#MaterialFile: varhany.mtl
+#PreviewFile: preview.jpg
+#OtherFiles: varhany-tex.jpg,varhany.txt
+#DownloadedFromURL:   www.sirall.com
+#DateOfDownload:   11.6.2007
+#CreatedBy:  Michal (Sirall) Èervenka
+#CreatedIn:    3D Studio Max 9
+#UploadedBy: Michal (Sirall) Èervenka
+#Description: Zdobné varhany
+#NumberOfPolygons: 1320
