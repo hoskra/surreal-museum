@@ -51,6 +51,12 @@ struct SCommonShaderProgram {
     // reflector related uniforms
     GLint reflectorPositionLocation;
     GLint reflectorDirectionLocation;
+    GLint pointLight1positionLocation;
+    GLint spotLight1positionLocation;
+    GLint spotLight2positionLocation;
+    GLint spotLight3positionLocation;
+        
+
 };
 
 /**
@@ -230,8 +236,9 @@ public:
             // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
             // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-            //glBindTexture(GL_TEXTURE_2D, (*geometry)->m_texture);
-
+            glBindTexture(GL_TEXTURE_2D, (*geometry)->m_texture);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
             //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
             //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
             //GLfloat color[4] = { 0,0,0,1 };
@@ -247,7 +254,6 @@ public:
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, (*geometry)->elementBufferObject); // bind our element array buffer (indices) to vao
         glBindBuffer(GL_ARRAY_BUFFER, (*geometry)->vertexBufferObject);
 
-
         // POSITION
         glEnableVertexAttribArray(shader.posLocation);
         glVertexAttribPointer(shader.posLocation, 3, GL_FLOAT, GL_FALSE, 0, 0);
@@ -256,10 +262,6 @@ public:
         // NORMAL
         glEnableVertexAttribArray(shader.normalLocation);CHECK_GL_ERROR();
         glVertexAttribPointer(shader.normalLocation, 3, GL_FLOAT, GL_FALSE, 0, (void*)(3 * sizeof(float) * mesh->mNumVertices));CHECK_GL_ERROR();
-
-        //glDisableVertexAttribArray(shader.colorLocation);
-        //glVertexAttrib3f(shader.colorLocation, color.r, color.g, color.b);
-
 
         // TEXTURE
         glEnableVertexAttribArray(shader.texCoordLocation);

@@ -84,6 +84,8 @@ bool Skybox::Init()
 
 void Skybox::Draw(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
 {
+	glStencilFunc(GL_ALWAYS, 0, -1);
+
 	glUseProgram(skyboxShaderProgram.program);
 	glm::mat4 matrix = projectionMatrix * viewMatrix;
 

@@ -54,9 +54,12 @@ struct GameState {
 	float centerY		= wh / 2;
 } state;
 
-int choice				= 0;		// for testing and object setup purposes
-bool debug				= true;		// for testing and object setup purposes
 float move_sensitivity	= 0.05f;
+
+// for testing and object setup purposes
+int materialSignum		= 1;		
+int choice				= 0;	
+bool debug				= true;	
 
 /**
  * Draw function.
@@ -73,84 +76,40 @@ void onDisplay()
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
-
 	// skybox
-	glStencilFunc(GL_ALWAYS, 0, -1);
 	(scene->skybox)->Draw(viewMatrix, projectionMatrix);  CHECK_GL_ERROR();
 
 	// cart
-	glStencilFunc(GL_ALWAYS, 1, -1);
 	scene->DrawCart(viewMatrix, projectionMatrix);  CHECK_GL_ERROR();
 
-	// environment
+	// stones
 	glStencilFunc(GL_ALWAYS, 2, -1);
-	scene->DrawStaticGroup(scene->stone, viewMatrix, projectionMatrix, -1.8f,  0.0f,  150.0f); 	CHECK_GL_ERROR();
-	scene->DrawStaticGroup(scene->stone, viewMatrix, projectionMatrix, -1.8f,  0.0f,  100.0f); 	CHECK_GL_ERROR();
-	scene->DrawStaticGroup(scene->stone, viewMatrix, projectionMatrix, -1.8f,  0.0f,  50.0f); 	CHECK_GL_ERROR();
-	scene->DrawStaticGroup(scene->stone, viewMatrix, projectionMatrix, -1.8f,  0.0f,   0.0f);	CHECK_GL_ERROR();
-	scene->DrawStaticGroup(scene->stone, viewMatrix, projectionMatrix, -1.8f,  0.0f, -50.0f); 	CHECK_GL_ERROR();
-	scene->DrawStaticGroup(scene->stone, viewMatrix, projectionMatrix, -1.8f,  0.0f, -100.0f); 	CHECK_GL_ERROR();
-
+	scene->DrawRepeatingGroup(scene->stone, viewMatrix, projectionMatrix, 6, -100.0f, 50.0f);
+	
+	// grass
 	glStencilFunc(GL_ALWAYS, 3, -1);
-	scene->DrawStatic(scene->grass, viewMatrix, projectionMatrix, 0.0f, 0.0f,  200.0f); 	CHECK_GL_ERROR();
-	scene->DrawStatic(scene->grass, viewMatrix, projectionMatrix, 0.0f, 0.0f, -100.0f); 	CHECK_GL_ERROR();
-	scene->DrawStatic(scene->grass, viewMatrix, projectionMatrix, 0.0f, 0.0f,  -50.0f); 	CHECK_GL_ERROR();
-	scene->DrawStatic(scene->grass, viewMatrix, projectionMatrix, 0.0f, 0.0f,    0.0f); 	CHECK_GL_ERROR();
-	scene->DrawStatic(scene->grass, viewMatrix, projectionMatrix, 0.0f, 0.0f,    50.0f);	CHECK_GL_ERROR();
-	scene->DrawStatic(scene->grass, viewMatrix, projectionMatrix, 0.0f, 0.0f,  100.0f); 	CHECK_GL_ERROR();
-	scene->DrawStatic(scene->grass, viewMatrix, projectionMatrix, 0.0f, 0.0f,  150.0f); 	CHECK_GL_ERROR();
+	glDisable(GL_CULL_FACE);
+	scene->DrawRepeatingObject(scene->grass, viewMatrix, projectionMatrix, 7, -100.0f, 50.0f);
+	glEnable(GL_CULL_FACE);
+
 	scene->DrawStatic(scene->varhany, viewMatrix, projectionMatrix);						CHECK_GL_ERROR();
 	scene->DrawStaticGroup(scene->bush, viewMatrix, projectionMatrix , 0, 0, 0); 			CHECK_GL_ERROR();
 
-
 	// gallery objects
-	glStencilFunc(GL_ALWAYS, 4, -1);
-	scene->DrawPainting(scene->painting_s, scene->painting_textures_s, viewMatrix, projectionMatrix, 0.0f, 0.0f, -50.0f);					CHECK_GL_ERROR();
-	scene->DrawPainting(scene->painting_s, scene->painting_textures_s, viewMatrix, projectionMatrix, 0.0f, 0.0f, 50.0f);					CHECK_GL_ERROR();
-	scene->DrawPainting(scene->painting_s, scene->painting_textures_s, viewMatrix, projectionMatrix, 0.0f, 0.0f, 150.0f);					CHECK_GL_ERROR();
-	
-	glStencilFunc(GL_ALWAYS, 5, -1);
-	scene->DrawPainting(scene->painting_h, scene->painting_textures_h, viewMatrix, projectionMatrix, 0.0f, 0.0f, -50.0f);					CHECK_GL_ERROR();
-	scene->DrawPainting(scene->painting_h, scene->painting_textures_h, viewMatrix, projectionMatrix, 0.0f, 0.0f, 50.0f);					CHECK_GL_ERROR();
-	scene->DrawPainting(scene->painting_h, scene->painting_textures_h, viewMatrix, projectionMatrix, 0.0f, 0.0f, 150.0f);					CHECK_GL_ERROR();
-	
-	glStencilFunc(GL_ALWAYS, 6, -1);
-	scene->DrawPainting(scene->painting_v, scene->painting_textures_v, viewMatrix, projectionMatrix, 0.0f, 0.0f, -50.0f);					CHECK_GL_ERROR();
-	scene->DrawPainting(scene->painting_v, scene->painting_textures_v, viewMatrix, projectionMatrix, 0.0f, 0.0f, 50.0f);					CHECK_GL_ERROR();
-	scene->DrawPainting(scene->painting_v, scene->painting_textures_v, viewMatrix, projectionMatrix, 0.0f, 0.0f, 150.0f);					CHECK_GL_ERROR();
+	scene->DrawGallery(viewMatrix, projectionMatrix, 3, -50.0f, 100.0f);
 
 	// hitchhiker objects
-	glStencilFunc(GL_ALWAYS, 7, -1);
-	scene->DrawFalling(scene->petunia, viewMatrix, projectionMatrix);						CHECK_GL_ERROR();
-	scene->DrawFalling(scene->petunia, viewMatrix, projectionMatrix, 0.0f, 0.0f, 100.0f);	CHECK_GL_ERROR();
-	
-	glStencilFunc(GL_ALWAYS, 8, -1);
-	scene->DrawFalling(scene->whale, viewMatrix, projectionMatrix);							CHECK_GL_ERROR();
-	scene->DrawFalling(scene->whale, viewMatrix, projectionMatrix, 0.0f, 0.0f, 100.0f);		CHECK_GL_ERROR();
+	scene->DrawHitchhiker(viewMatrix, projectionMatrix, 2, 0.0f, 100.0f);
 
 	// breton objects
-	glStencilFunc(GL_ALWAYS, 9, -1);
-	scene->DrawSewing(viewMatrix, projectionMatrix , 0, 0, 0);									CHECK_GL_ERROR();
-	scene->DrawSewing(viewMatrix, projectionMatrix , 0, 0, 100);								CHECK_GL_ERROR();
-
-	glStencilFunc(GL_ALWAYS, 10, -1);
-	scene->DrawStaticGroup(scene->autopsy, viewMatrix, projectionMatrix, 0, 0, 0, 0.5f);		CHECK_GL_ERROR();
-	scene->DrawStaticGroup(scene->autopsy, viewMatrix, projectionMatrix, 0, 0, 100.0f, 0.5f);	CHECK_GL_ERROR();
-
-	glDisable(GL_CULL_FACE);
-
-	glStencilFunc(GL_ALWAYS, 11, -1);
-	scene->DrawUmbrella(viewMatrix, projectionMatrix, 0, 0, 0);				CHECK_GL_ERROR();
-	scene->DrawUmbrella(viewMatrix, projectionMatrix, 0, 0, 100.0f);		CHECK_GL_ERROR();
-	scene->DrawUmbrella(viewMatrix, projectionMatrix, 0, 0, 0		, 2);	CHECK_GL_ERROR();
-	scene->DrawUmbrella(viewMatrix, projectionMatrix, 0, 0, 100.0f	, 2);	CHECK_GL_ERROR();
-	scene->DrawUmbrella(viewMatrix, projectionMatrix, 0, 0, 0		, 3);	CHECK_GL_ERROR();
-	scene->DrawUmbrella(viewMatrix, projectionMatrix, 0, 0, 100.0f	, 3);	CHECK_GL_ERROR();
+	scene->DrawBreton(viewMatrix, projectionMatrix, 2, 0.0f, 100.0f);
 
 	// moving texture mushrooms
-	glStencilFunc(GL_ALWAYS, 12, -1);
 	scene->DrawAmanita(viewMatrix, projectionMatrix);						CHECK_GL_ERROR();
 	scene->DrawAmanita(viewMatrix, projectionMatrix, 0.0f, 0.0f, 100.0f);	CHECK_GL_ERROR();
+	
+	// pointLight1
+	scene->DrawLight(viewMatrix, projectionMatrix);						CHECK_GL_ERROR();
 
 	// move cart
 	if (state.camera == 0) {
@@ -159,11 +118,19 @@ void onDisplay()
 		scene->camera_direction = mainCamera->Up;
 	}
 
+	// mouse pointer
 	if (state.camera == 0 || state.camera == 2) {
 		ptr->Draw();
 	}
 
+	glUseProgram(scene->shaderProgram.program);
+	glUniform1f(scene->shaderProgram.timeLocation, scene->time);
 
+
+	//glUniform4fv(scene->shaderProgram.pointpointLight11positionLocation, 1, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)));
+	//glUniform4fv(scene->shaderProgram.pointpointLight12positionLocation, 1, glm::value_ptr(glm::vec4(0.0f, 5.0f, 0.0f, 1.0f)));
+
+	glUseProgram(0);
 	glutSwapBuffers();
 }
 
@@ -230,8 +197,7 @@ void onTimer(int)
 
 			if (scene->painting == 8) {
 				scene->painting = 0;
-			}
-			else {
+			} else {
 				scene->painting++;
 			}
 			std::cout << "painting: " << scene->painting << std::endl;
@@ -275,10 +241,10 @@ void mouseCallback(int buttonPressed, int buttonState, int mouseX, int mouseY)
 			//std::cout << mainCamera->Front.x 	<< " " << mainCamera->Front.y 		<< "  " << mainCamera->Front.z 		<< std::endl;
 			//std::cout << mainCamera->Up.x 		<< " " << mainCamera->Up.y 			<< "  " << mainCamera->Up.z  		<< std::endl;
 			//std::cout << std::endl;
-			//std::cout << "Scale: " << scene->amanita_hat->m_size 		<< std::endl;
+			//std::cout << "Scale: " << scene->pointLight1->m_size 		<< std::endl;
 			//std::cout << "Obj 0: " << scene->amanita_stem->m_position.x << ", " << scene->amanita_stem->m_position.y 	<< ", " << scene->amanita_stem->m_position.z 	<< std::endl;
-			//std::cout << "Obj 1: " << scene->amanita_hat->m_position.x 	<< ", " << scene->amanita_hat->m_position.y 	<< ", " << scene->amanita_hat->m_position.z 	<< std::endl;
-			//std::cout << "Obj 2: " << scene->cart_2->m_position.x 		<< ", " << scene->cart_2->m_position.y 			<< ", " << scene->cart_2->m_position.z 			<< std::endl;
+			//std::cout << "Obj 1: " << scene->pointLight1->m_position.x 	<< ", " << scene->pointLight1->m_position.y 	<< ", " << scene->pointLight1->m_position.z 	<< std::endl;
+			//std::cout << "Obj 2: " << scene->pointLight1->m_position.x 		<< ", " << scene->pointLight1->m_position.y 			<< ", " << scene->pointLight1->m_position.z 			<< std::endl;
 
 			//printf("Clicked on object with ID: %d\n", (int)clickID);
 			//if (clickID == 0) {
@@ -286,11 +252,17 @@ void mouseCallback(int buttonPressed, int buttonState, int mouseX, int mouseY)
 			//} else {
 			//	printf("Clicked on object with ID: %d\n", (int)clickID);
 			//}
+
+			std::cout << "Material ambient: glm::vec3(" << scene->pointLight1->m_ambient.x << "f, " << scene->pointLight1->m_ambient.y << "f, " << scene->pointLight1->m_ambient.z << "f);" << std::endl;
+			std::cout << "Material diffuse: glm::vec3(" << scene->pointLight1->m_diffuse.x << "f, " << scene->pointLight1->m_diffuse.y << "f, " << scene->pointLight1->m_diffuse.z << "f);" << std::endl;
+			std::cout << "Material specular: glm::vec3(" << scene->pointLight1->m_specular.x << "f, " << scene->pointLight1->m_specular.y << "f, " << scene->pointLight1->m_specular.z << "f);" << std::endl;
+			std::cout << "Material shiness: " << scene->pointLight1->m_shininess << std::endl;
+
 		}
 
 		if (state.camera == 0 || state.camera == 2) {
 			if (clickID == 4) {
-				scene->painting_s->m_size += 0.1;
+				scene->pointLight1->m_size += 0.1;
 			}
 			else if (clickID == 5) {
 				scene->painting_h->m_size += 0.1;
@@ -413,6 +385,72 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 		state.speed -= state.speedStep;
 		if (state.speed <= SPEED_MIN) state.speed = SPEED_MIN;
 		break;
+	case 42:	// *
+		if (debug) scene->pointLight1->m_shininess += materialSignum * 0.05; break;
+	case 49:	// 1
+		if (debug) {
+			scene->pointLight1->m_ambient.x += materialSignum * 0.05;
+			if (scene->pointLight1->m_ambient.x >= 1.0f) scene->pointLight1->m_ambient.x = 1.0f;
+			if (scene->pointLight1->m_ambient.x <= 0.0f) scene->pointLight1->m_ambient.x = 0.0f; break;
+		}
+	case 50:	// 2
+		if (debug) {
+			scene->pointLight1->m_ambient.y += materialSignum * 0.05;
+			if (scene->pointLight1->m_ambient.y >= 1.0f) scene->pointLight1->m_ambient.y = 1.0f;
+			if (scene->pointLight1->m_ambient.y <= 0.0f) scene->pointLight1->m_ambient.y = 0.0f; break;
+		}
+	case 51:	// 3
+		if (debug) {
+			scene->pointLight1->m_ambient.z += materialSignum * 0.05;
+			if (scene->pointLight1->m_ambient.z >= 1.0f) scene->pointLight1->m_ambient.z = 1.0f;
+			if (scene->pointLight1->m_ambient.z <= 0.0f) scene->pointLight1->m_ambient.z = 0.0f; break;
+		}
+	case 52:	// 4
+		if (debug) {
+			scene->pointLight1->m_diffuse.x += materialSignum * 0.05;
+			if (scene->pointLight1->m_diffuse.x >= 1.0f) scene->pointLight1->m_diffuse.x = 1.0f;
+			if (scene->pointLight1->m_diffuse.x <= 0.0f) scene->pointLight1->m_diffuse.x = 0.0f; break;
+		}
+	case 53:	// 5
+		if (debug) {
+			scene->pointLight1->m_diffuse.y += materialSignum * 0.05;
+			if (scene->pointLight1->m_diffuse.y >= 1.0f) scene->pointLight1->m_diffuse.y = 1.0f;
+			if (scene->pointLight1->m_diffuse.y <= 0.0f) scene->pointLight1->m_diffuse.y = 0.0f; break;
+		}
+	case 54:	// 6
+		if (debug) {
+			scene->pointLight1->m_diffuse.z += materialSignum * 0.05;
+			if (scene->pointLight1->m_diffuse.z >= 1.0f) scene->pointLight1->m_diffuse.z = 1.0f;
+			if (scene->pointLight1->m_diffuse.z <= 0.0f) scene->pointLight1->m_diffuse.z = 0.0f; break;
+		}
+	case 55:	// 7
+		if (debug) {
+			scene->pointLight1->m_specular.x += materialSignum * 0.05;
+			if (scene->pointLight1->m_specular.x >= 1.0f) scene->pointLight1->m_specular.x = 1.0f;
+			if (scene->pointLight1->m_specular.x <= 0.0f) scene->pointLight1->m_specular.x = 0.0f; break;
+		}
+	case 56:	// 8
+		if (debug) {
+			scene->pointLight1->m_specular.y += materialSignum * 0.05;
+			if (scene->pointLight1->m_specular.y >= 1.0f) scene->pointLight1->m_specular.y = 1.0f;
+			if (scene->pointLight1->m_specular.y <= 0.0f) scene->pointLight1->m_specular.y = 0.0f; break;
+		}
+	case 57:	// 9
+		if (debug) {
+			scene->pointLight1->m_specular.z += materialSignum * 0.05;
+			if (scene->pointLight1->m_specular.z >= 1.0f) scene->pointLight1->m_specular.z = 1.0f;
+			if (scene->pointLight1->m_specular.z <= 0.0f) scene->pointLight1->m_specular.z = 0.0f; break;
+		}
+	case 48:	// 0
+		if (debug) {
+			if (materialSignum == 1) {
+				materialSignum = -1;
+			}
+			else {
+				materialSignum = 1;
+			}
+		}
+		break;
 	case 'u':
 		if (debug) {
 			choice++;
@@ -421,14 +459,10 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 		}
 		break;
 	case 'o':
-		if (debug) {
-			scene->amanita_hat->m_size += 0.05;
-		}
+		if (debug) scene->pointLight1->m_size += 0.05;
 		break;
 	case 'l':
-		if (debug) {
-			scene->amanita_hat->m_size -= 0.05;
-		}
+		if (debug) scene->pointLight1->m_size -= 0.05;
 		break;
 	case 'g':
 		if (debug) {
@@ -436,10 +470,10 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 				scene->amanita_stem->m_position.x += move_sensitivity;
 			}
 			else if (choice == 1) {
-				scene->amanita_hat->m_position.x += move_sensitivity;
+				scene->pointLight1->m_position.x += move_sensitivity;
 			}
 			else {
-				scene->cart_2->m_position.x += move_sensitivity;
+				scene->pointLight1->m_position.x += move_sensitivity;
 			}
 		}
 		break;
@@ -449,10 +483,10 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 				scene->amanita_stem->m_position.x -= move_sensitivity;
 			}
 			else if (choice == 1) {
-				scene->amanita_hat->m_position.x -= move_sensitivity;
+				scene->pointLight1->m_position.x -= move_sensitivity;
 			}
 			else {
-				scene->cart_2->m_position.x -= move_sensitivity;
+				scene->pointLight1->m_position.x -= move_sensitivity;
 			}
 		}
 		break;
@@ -462,10 +496,10 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 				scene->amanita_stem->m_position.y += move_sensitivity;
 			}
 			else if (choice == 1) {
-				scene->amanita_hat->m_position.y += move_sensitivity;
+				scene->pointLight1->m_position.y += move_sensitivity;
 			}
 			else {
-				scene->cart_2->m_position.y += move_sensitivity;
+				scene->pointLight1->m_position.y += move_sensitivity;
 			}
 		}
 		break;
@@ -475,10 +509,10 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 				scene->amanita_stem->m_position.y -= move_sensitivity;
 			}
 			else if (choice == 1) {
-				scene->amanita_hat->m_position.y -= move_sensitivity;
+				scene->pointLight1->m_position.y -= move_sensitivity;
 			}
 			else {
-				scene->cart_2->m_position.y -= move_sensitivity;
+				scene->pointLight1->m_position.y -= move_sensitivity;
 			}
 		}
 		break;
@@ -488,10 +522,10 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 				scene->amanita_stem->m_position.z += move_sensitivity;
 			}
 			else if (choice == 1) {
-				scene->amanita_hat->m_position.z += move_sensitivity;
+				scene->pointLight1->m_position.z += move_sensitivity;
 			}
 			else {
-				scene->cart_2->m_position.z += move_sensitivity;
+				scene->pointLight1->m_position.z += move_sensitivity;
 			}
 		}
 		break;
@@ -501,10 +535,10 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 				scene->amanita_stem->m_position.z -= move_sensitivity;
 			}
 			else if (choice == 1) {
-				scene->amanita_hat->m_position.z -= move_sensitivity;
+				scene->pointLight1->m_position.z -= move_sensitivity;
 			}
 			else {
-				scene->cart_2->m_position.z -= move_sensitivity;
+				scene->pointLight1->m_position.z -= move_sensitivity;
 			}
 		}
 		break;
