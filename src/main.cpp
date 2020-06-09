@@ -59,7 +59,7 @@ float move_sensitivity	= 0.05f;
 // for testing and object setup purposes
 int materialSignum		= 1;		
 int choice				= 0;	
-bool debug				= true;	
+bool debug				= false;	
 
 /**
  * Draw function.
@@ -93,6 +93,7 @@ void onDisplay()
 	glEnable(GL_CULL_FACE);
 
 	scene->DrawStatic(scene->varhany, viewMatrix, projectionMatrix);						CHECK_GL_ERROR();
+	glStencilFunc(GL_ALWAYS, 14, -1);
 	scene->DrawStaticGroup(scene->bush, viewMatrix, projectionMatrix , 0, 0, 0); 			CHECK_GL_ERROR();
 
 	// gallery objects
@@ -109,7 +110,7 @@ void onDisplay()
 	scene->DrawAmanita(viewMatrix, projectionMatrix, 0.0f, 0.0f, 100.0f);	CHECK_GL_ERROR();
 	
 	// pointLight1
-	scene->DrawLight(viewMatrix, projectionMatrix);						CHECK_GL_ERROR();
+	scene->DrawLight(viewMatrix, projectionMatrix, mainCamera->Position, mainCamera->Up);							CHECK_GL_ERROR();
 
 	// move cart
 	if (state.camera == 0) {
@@ -126,10 +127,6 @@ void onDisplay()
 	glUseProgram(scene->shaderProgram.program);
 	glUniform1f(scene->shaderProgram.timeLocation, scene->time);
 
-
-	//glUniform4fv(scene->shaderProgram.pointpointLight11positionLocation, 1, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)));
-	//glUniform4fv(scene->shaderProgram.pointpointLight12positionLocation, 1, glm::value_ptr(glm::vec4(0.0f, 5.0f, 0.0f, 1.0f)));
-
 	glUseProgram(0);
 	glutSwapBuffers();
 }
@@ -141,6 +138,7 @@ void onReshape(int width, int height);
 void mouseCallback(int buttonPressed, int buttonState, int mouseX, int mouseY);
 void passiveMouseMotionCallback(int mouseX, int mouseY);
 void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY);
+void specialKeyboardCallback(int specKeyPressed, int mouseX, int mouseY);
 
 /**
  * Sets up window, GLUT, pgr framework and scene.
@@ -159,6 +157,7 @@ int main(int argc, char* argv[])
 	glutTimerFunc			(33, onTimer, 0);
 	glutMouseFunc			(mouseCallback);
 	glutKeyboardFunc		(keyboardCallback);
+	glutSpecialFunc			(specialKeyboardCallback);
 	glutPassiveMotionFunc	(NULL);
 
 	if (!pgr::initialize(pgr::OGL_VER_MAJOR, pgr::OGL_VER_MINOR))  pgr::dieWithError("pgr init failed, required OpenGL not supported?");
@@ -223,55 +222,55 @@ void mouseCallback(int buttonPressed, int buttonState, int mouseX, int mouseY)
 {
 	if ((buttonPressed == GLUT_LEFT_BUTTON) && (buttonState == GLUT_DOWN))
 	{
-
 		unsigned char clickID = 0;
 		mouseY = state.wh - mouseY - 1;
-
-		printf("Coordinates: %d %d\n", mouseX, mouseY);
 
 		glReadPixels(mouseX, mouseY, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, &clickID);
 		glDisable(GL_STENCIL_TEST);
 
-
 		if (debug)
 		{
-			//std::cout << "Yaw: " 	<< mainCamera->Yaw 		<< std::endl;
-			//std::cout << "Pitch: " 	<< mainCamera->Pitch 	<< std::endl;
-			//std::cout << mainCamera->Position.x << " " << mainCamera->Position.y 	<< "  " << mainCamera->Position.z 	<< std::endl;
-			//std::cout << mainCamera->Front.x 	<< " " << mainCamera->Front.y 		<< "  " << mainCamera->Front.z 		<< std::endl;
-			//std::cout << mainCamera->Up.x 		<< " " << mainCamera->Up.y 			<< "  " << mainCamera->Up.z  		<< std::endl;
-			//std::cout << std::endl;
-			//std::cout << "Scale: " << scene->pointLight1->m_size 		<< std::endl;
-			//std::cout << "Obj 0: " << scene->amanita_stem->m_position.x << ", " << scene->amanita_stem->m_position.y 	<< ", " << scene->amanita_stem->m_position.z 	<< std::endl;
-			//std::cout << "Obj 1: " << scene->pointLight1->m_position.x 	<< ", " << scene->pointLight1->m_position.y 	<< ", " << scene->pointLight1->m_position.z 	<< std::endl;
-			//std::cout << "Obj 2: " << scene->pointLight1->m_position.x 		<< ", " << scene->pointLight1->m_position.y 			<< ", " << scene->pointLight1->m_position.z 			<< std::endl;
+			if (false) {
+				printf("Coordinates: %d %d\n", mouseX, mouseY);
+				std::cout << "Yaw: " 	<< mainCamera->Yaw 		<< std::endl;
+				std::cout << "Pitch: " 	<< mainCamera->Pitch 	<< std::endl;
+				std::cout << mainCamera->Position.x << " " << mainCamera->Position.y 	<< "  " << mainCamera->Position.z 	<< std::endl;
+				std::cout << mainCamera->Front.x 	<< " " << mainCamera->Front.y 		<< "  " << mainCamera->Front.z 		<< std::endl;
+				std::cout << mainCamera->Up.x 		<< " " << mainCamera->Up.y 			<< "  " << mainCamera->Up.z  		<< std::endl;
+				std::cout << std::endl;
+				std::cout << "Scale: " << scene->pointLight1->m_size 		<< std::endl;
+				std::cout << "Obj 0: " << scene->amanita_stem->m_position.x << ", " << scene->amanita_stem->m_position.y 	<< ", " << scene->amanita_stem->m_position.z 	<< std::endl;
+				std::cout << "Obj 1: " << scene->pointLight1->m_position.x 	<< ", " << scene->pointLight1->m_position.y 	<< ", " << scene->pointLight1->m_position.z 	<< std::endl;
+				std::cout << "Obj 2: " << scene->pointLight1->m_position.x 		<< ", " << scene->pointLight1->m_position.y 			<< ", " << scene->pointLight1->m_position.z 			<< std::endl;
 
-			//printf("Clicked on object with ID: %d\n", (int)clickID);
-			//if (clickID == 0) {
-			//	printf("Clicked on background\n");
-			//} else {
-			//	printf("Clicked on object with ID: %d\n", (int)clickID);
-			//}
+				printf("Clicked on object with ID: %d\n", (int)clickID);
+				if (clickID == 0) {
+					printf("Clicked on background\n");
+				} else {
+					printf("Clicked on object with ID: %d\n", (int)clickID);
+				}
 
-			std::cout << "Material ambient: glm::vec3(" << scene->pointLight1->m_ambient.x << "f, " << scene->pointLight1->m_ambient.y << "f, " << scene->pointLight1->m_ambient.z << "f);" << std::endl;
-			std::cout << "Material diffuse: glm::vec3(" << scene->pointLight1->m_diffuse.x << "f, " << scene->pointLight1->m_diffuse.y << "f, " << scene->pointLight1->m_diffuse.z << "f);" << std::endl;
-			std::cout << "Material specular: glm::vec3(" << scene->pointLight1->m_specular.x << "f, " << scene->pointLight1->m_specular.y << "f, " << scene->pointLight1->m_specular.z << "f);" << std::endl;
-			std::cout << "Material shiness: " << scene->pointLight1->m_shininess << std::endl;
-
+				std::cout << "Material ambient: glm::vec3(" << scene->pointLight1->m_ambient.x << "f, " << scene->pointLight1->m_ambient.y << "f, " << scene->pointLight1->m_ambient.z << "f);" << std::endl;
+				std::cout << "Material diffuse: glm::vec3(" << scene->pointLight1->m_diffuse.x << "f, " << scene->pointLight1->m_diffuse.y << "f, " << scene->pointLight1->m_diffuse.z << "f);" << std::endl;
+				std::cout << "Material specular: glm::vec3(" << scene->pointLight1->m_specular.x << "f, " << scene->pointLight1->m_specular.y << "f, " << scene->pointLight1->m_specular.z << "f);" << std::endl;
+				std::cout << "Material shiness: " << scene->pointLight1->m_shininess << std::endl;
+			}
 		}
 
 		if (state.camera == 0 || state.camera == 2) {
 			if (clickID == 4) {
 				scene->pointLight1->m_size += 0.1;
-			}
-			else if (clickID == 5) {
+			} else if (clickID == 5) {
 				scene->painting_h->m_size += 0.1;
-			}
-			else if (clickID == 6) {
+			} else if (clickID == 6) {
 				scene->painting_v->m_size += 0.1;
-			}
-			else if (clickID == 10) {
+			} else if (clickID == 10) {
 				scene->change = scene->change ? false : true;
+			} else if (clickID == 14) {
+				if (scene->umbrellaCnt <= 5) {
+					scene->umbrellaCnt++;
+				}
+				std::cout << "Umbrella count at maximum." << std::endl;
 			}
 		}
 	}
@@ -284,6 +283,14 @@ void mouseCallback(int buttonPressed, int buttonState, int mouseX, int mouseY)
 
 	if (state.fieldOfView <= 1.0f)  state.fieldOfView = 1.0f;
 	if (state.fieldOfView >= CAMERA_FOV_MAX) state.fieldOfView = CAMERA_FOV_MAX;
+}
+
+void specialKeyboardCallback(int specKeyPressed, int mouseX, int mouseY) {
+	switch (specKeyPressed) {
+	case GLUT_KEY_F1:
+		scene->Reset(debug);  
+		break;
+	}
 }
 
 void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
@@ -358,7 +365,7 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 		}
 	case 'r':
 	case 'R':
-		scene->ResetSize();  break;
+		scene->Reset(debug);  break;
 	case 'w':
 	case 'W':
 		if (state.camera == 2) mainCamera->ProcessKeyboard(0, state.deltaTime); break;
@@ -445,8 +452,7 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 		if (debug) {
 			if (materialSignum == 1) {
 				materialSignum = -1;
-			}
-			else {
+			} else {
 				materialSignum = 1;
 			}
 		}
@@ -468,11 +474,9 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 		if (debug) {
 			if (choice == 0) {
 				scene->amanita_stem->m_position.x += move_sensitivity;
-			}
-			else if (choice == 1) {
+			} else if (choice == 1) {
 				scene->pointLight1->m_position.x += move_sensitivity;
-			}
-			else {
+			} else {
 				scene->pointLight1->m_position.x += move_sensitivity;
 			}
 		}
@@ -481,11 +485,9 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 		if (debug) {
 			if (choice == 0) {
 				scene->amanita_stem->m_position.x -= move_sensitivity;
-			}
-			else if (choice == 1) {
+			} else if (choice == 1) {
 				scene->pointLight1->m_position.x -= move_sensitivity;
-			}
-			else {
+			} else {
 				scene->pointLight1->m_position.x -= move_sensitivity;
 			}
 		}
@@ -494,11 +496,9 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 		if (debug) {
 			if (choice == 0) {
 				scene->amanita_stem->m_position.y += move_sensitivity;
-			}
-			else if (choice == 1) {
+			} else if (choice == 1) {
 				scene->pointLight1->m_position.y += move_sensitivity;
-			}
-			else {
+			} else {
 				scene->pointLight1->m_position.y += move_sensitivity;
 			}
 		}
@@ -507,11 +507,9 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 		if (debug) {
 			if (choice == 0) {
 				scene->amanita_stem->m_position.y -= move_sensitivity;
-			}
-			else if (choice == 1) {
+			} else if (choice == 1) {
 				scene->pointLight1->m_position.y -= move_sensitivity;
-			}
-			else {
+			} else {
 				scene->pointLight1->m_position.y -= move_sensitivity;
 			}
 		}
@@ -520,11 +518,9 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 		if (debug) {
 			if (choice == 0) {
 				scene->amanita_stem->m_position.z += move_sensitivity;
-			}
-			else if (choice == 1) {
+			} else if (choice == 1) {
 				scene->pointLight1->m_position.z += move_sensitivity;
-			}
-			else {
+			} else {
 				scene->pointLight1->m_position.z += move_sensitivity;
 			}
 		}
@@ -533,11 +529,9 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 		if (debug) {
 			if (choice == 0) {
 				scene->amanita_stem->m_position.z -= move_sensitivity;
-			}
-			else if (choice == 1) {
+			} else if (choice == 1) {
 				scene->pointLight1->m_position.z -= move_sensitivity;
-			}
-			else {
+			} else {
 				scene->pointLight1->m_position.z -= move_sensitivity;
 			}
 		}

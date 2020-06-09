@@ -6,8 +6,6 @@
 */
 #pragma once
 
-//#include "vertexArray.h"
-//#include "shader.h"
 #include "pgr.h"
 
 class Skybox

@@ -1,9 +1,9 @@
 //----------------------------------------------------------------------------------------
 /**
-* \file    myObject.h
+* \file    mousePointer.h
 * \author  Radka Hoskova
 * \date    2020
-* \brief   Custom object loading.
+* \brief   Mouse pointer in free camera mode.
 */
 //----------------------------------------------------------------------------------------
 #include "pgr.h"

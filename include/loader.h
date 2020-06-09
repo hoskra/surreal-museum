@@ -48,14 +48,15 @@ struct SCommonShaderProgram {
     GLint textureTransformLocation;
     GLint optionLocation;       // if texture transform should be used
 
-    // reflector related uniforms
+    // light
     GLint reflectorPositionLocation;
     GLint reflectorDirectionLocation;
     GLint pointLight1positionLocation;
     GLint spotLight1positionLocation;
     GLint spotLight2positionLocation;
     GLint spotLight3positionLocation;
-        
+    GLint reflectorExponentLocation;
+    GLint spotCosCutOffLocation;
 
 };
 

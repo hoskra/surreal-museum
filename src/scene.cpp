@@ -11,38 +11,8 @@ void Scene::Clear() const
 
 void Scene::InitGameObjects()
 {
-
-	skybox->Init(); CHECK_GL_ERROR();
-    shaderProgram.program = loader.CreateShader("data/shaders/color.vert", "data/shaders/color.frag");
-
-    shaderProgram.timeLocation = glGetUniformLocation(shaderProgram.program, "time");
-    shaderProgram.colorLocation = glGetAttribLocation(shaderProgram.program, "color");            CHECK_GL_ERROR();
-    // get vertex attributes locations
-    shaderProgram.posLocation = glGetAttribLocation(shaderProgram.program, "position");             CHECK_GL_ERROR();
-    shaderProgram.normalLocation = glGetAttribLocation(shaderProgram.program, "normal");                CHECK_GL_ERROR();
-    shaderProgram.texCoordLocation = glGetAttribLocation(shaderProgram.program, "texCoord");                CHECK_GL_ERROR();
-    // get uniforms locations
-    shaderProgram.PVMmatrixLocation = glGetUniformLocation(shaderProgram.program, "PVMmatrix");             CHECK_GL_ERROR();
-    shaderProgram.VmatrixLocation = glGetUniformLocation(shaderProgram.program, "Vmatrix");             CHECK_GL_ERROR();
-    shaderProgram.MmatrixLocation = glGetUniformLocation(shaderProgram.program, "Mmatrix");             CHECK_GL_ERROR();
-    shaderProgram.normalMatrixLocation = glGetUniformLocation(shaderProgram.program, "normalMatrix");               CHECK_GL_ERROR();
-    // material
-    shaderProgram.ambientLocation = glGetUniformLocation(shaderProgram.program, "material.ambient");                CHECK_GL_ERROR();
-    shaderProgram.diffuseLocation = glGetUniformLocation(shaderProgram.program, "material.diffuse");                CHECK_GL_ERROR();
-    shaderProgram.specularLocation = glGetUniformLocation(shaderProgram.program, "material.specular");              CHECK_GL_ERROR();
-    shaderProgram.shininessLocation = glGetUniformLocation(shaderProgram.program, "material.shininess");                CHECK_GL_ERROR();
-    // texture
-    shaderProgram.texSamplerLocation = glGetUniformLocation(shaderProgram.program, "texSampler");               CHECK_GL_ERROR();
-    shaderProgram.useTextureLocation = glGetUniformLocation(shaderProgram.program, "material.useTexture");              CHECK_GL_ERROR();
-    // lights
-    shaderProgram.pointLight1positionLocation = glGetUniformLocation(shaderProgram.program, "pointLight1position");             CHECK_GL_ERROR();
-    shaderProgram.spotLight1positionLocation = glGetUniformLocation(shaderProgram.program, "spotLight1position");             CHECK_GL_ERROR();
-    shaderProgram.reflectorDirectionLocation = glGetUniformLocation(shaderProgram.program, "reflectorDirection");               CHECK_GL_ERROR();
-    
-    
-    shaderProgram.textureTransformLocation = glGetUniformLocation(shaderProgram.program, "textureTransform");               CHECK_GL_ERROR();
-    shaderProgram.optionLocation = glGetUniformLocation(shaderProgram.program, "option");               CHECK_GL_ERROR();
-
+	skybox->Init();
+    LoadShaders();
                                                                                                                                      
     if (!loader.loadSingleMesh("data/models/shoppingCart_0.obj", shaderProgram, &cart_0)) std::cout << "Loading cart failed" << std::endl;
     if (!loader.loadSingleMesh("data/models/shoppingCart_1.obj", shaderProgram, &cart_1)) std::cout << "Loading cart failed" << std::endl;
@@ -109,7 +79,8 @@ void Scene::InitGameObjects()
 }
 
 
-void Scene::SetObjects(void) {
+void Scene::SetObjects(void) 
+{
     // --------- gallery
     painting_s->m_position = glm::vec3(-14.45, 6.55, 33.4498);
     painting_s->m_size = 8.0f;
@@ -213,11 +184,12 @@ void Scene::SetObjects(void) {
     pointLight1->m_position = glm::vec3(-13.1499, 2.3f, 13.8499);
 
     spotLight1->m_size = 0.03f;
-    spotLight1->m_position = glm::vec3(0.0f, 0.0f, 0.0f);
-    //spotLight1->m_position = glm::vec3(-13.45, 6.55, 33.4498);
+    spotLight1->m_position = glm::vec3(0.3, -0.0499999, -15.7);
+    spotLight1->m_direction = glm::vec3(1.0f, 0.0f, 0.9f);
 }
 
-void Scene::SetMaterials(void) {
+void Scene::SetMaterials(void)
+{
     grass->m_ambient = glm::vec3(1.0f, 1.0f, 1.0f);
     grass->m_diffuse = glm::vec3(0.25f, 0.25f, 0.1f);
     grass->m_specular = glm::vec3(0.0499998f, 0.0f, 0.0f);
@@ -273,6 +245,15 @@ void Scene::SetMaterials(void) {
     pointLight1->m_ambient = glm::vec3(0.0f, 1.f, 1.0f);
     pointLight1->m_diffuse = glm::vec3(0.0f, 0.f, 0.8f);
     pointLight1->m_specular = glm::vec3(0.0f, 0.5f, 0.5f);
+
+    spotLight1->m_ambient = glm::vec3(0.0f, 1.f, 1.0f);
+    spotLight1->m_diffuse = glm::vec3(0.0f, 0.f, 0.8f);
+    spotLight1->m_specular = glm::vec3(0.0f, 0.5f, 0.5f);
+
+
+    varhany->m_ambient = glm::vec3(0.4f, 0.4f, 0.4f);
+    varhany->m_diffuse = glm::vec3(0.4f, 0.4f, 0.3f);
+    varhany->m_specular = glm::vec3(0.3f, 0.2f, 0.2f);
 }
 
 void Scene::DrawRepeatingGroup(std::vector<GameObject*> group, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, unsigned int count, float start, unsigned int spacing) {
@@ -289,15 +270,16 @@ void Scene::DrawRepeatingObject(GameObject* object, const glm::mat4& viewMatrix,
     }
 }
 
-void Scene::DrawLight(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, float x, float y, float z) {
+void Scene::DrawLight(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, glm::vec3 position, glm::vec3 direction) {
     GameObject* object = pointLight1;
 
     glUseProgram(shaderProgram.program);  CHECK_GL_ERROR();
 
+    object->m_position.y += sin(time) / 50;
     glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(
-        object->m_position.x + x,
-        object->m_position.y + y,
-        object->m_position.z + z
+        object->m_position.x, 
+        object->m_position.y, 
+        object->m_position.z 
     ));
     modelMatrix = glm::rotate(modelMatrix, glm::radians(object->m_angle), object->m_direction);
     modelMatrix = glm::scale(modelMatrix, glm::vec3(object->m_size, object->m_size, object->m_size));
@@ -316,25 +298,25 @@ void Scene::DrawLight(const glm::mat4& viewMatrix, const glm::mat4& projectionMa
 
     glBindVertexArray(0); CHECK_GL_ERROR();
 
-
-
     glUseProgram(0);
     glUseProgram(shaderProgram.program);  CHECK_GL_ERROR();
 
-
-
     object = spotLight1;
-
+    object->m_direction.z += cos(time) / 50;
+    
     modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(
-        object->m_position.x + x,
-        object->m_position.y + y,
-        object->m_position.z + z
+        object->m_position.x,
+        object->m_position.y,
+        object->m_position.z
     ));
     modelMatrix = glm::rotate(modelMatrix, glm::radians(object->m_angle), object->m_direction);
     modelMatrix = glm::scale(modelMatrix, glm::vec3(object->m_size, object->m_size, object->m_size));
 
     glUniform3fv(shaderProgram.spotLight1positionLocation, 1, glm::value_ptr(object->m_position));
+    glUniform3fv(shaderProgram.reflectorDirectionLocation, 1, glm::value_ptr(object->m_direction));
 
+    glUniform1f(shaderProgram.reflectorExponentLocation, 0.50f + abs(cos(time/2)*50) );
+    glUniform1f(shaderProgram.spotCosCutOffLocation,     0.95f + sin(time) / 50);
 
     SetTransformUniforms(modelMatrix, viewMatrix, projectionMatrix); CHECK_GL_ERROR();
     SetMaterialUniforms(object);
@@ -499,7 +481,9 @@ void Scene::DrawAmanita(const glm::mat4& viewMatrix, const glm::mat4& projection
     glUniform3fv(shaderProgram.specularLocation, 1, glm::value_ptr(amanita_stem->m_specular));
     glUniform1f(shaderProgram.shininessLocation, amanita_stem->m_shininess);
     CHECK_GL_ERROR();
+    
     glUniform1i(shaderProgram.optionLocation, 0);
+     
 
     glUniform1i(shaderProgram.useTextureLocation, 1);
     glUniform1i(shaderProgram.texSamplerLocation, 0);
@@ -555,7 +539,7 @@ void Scene::DrawSewing(const glm::mat4& viewMatrix, const glm::mat4& projectionM
     glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(mx, my, mz));
     modelMatrix = glm::rotate(modelMatrix, glm::radians(object->m_angle * alpha), object->m_direction);
     modelMatrix = glm::scale(modelMatrix, glm::vec3(object->m_size, object->m_size, object->m_size));
-
+    
     SetTransformUniforms(modelMatrix, viewMatrix, projectionMatrix);
     SetMaterialUniforms(object);
 
@@ -655,24 +639,22 @@ void Scene::DrawHitchhiker(const glm::mat4& viewMatrix, const glm::mat4& project
 void Scene::DrawBreton(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, unsigned int count, float start, unsigned int spacing) {
     for (unsigned int i = 0; i <= count; i++) {
         glStencilFunc(GL_ALWAYS, 9, -1);
-        DrawSewing(viewMatrix, projectionMatrix, 0, 0, 0);							    
+        DrawSewing(viewMatrix, projectionMatrix, 0, 0, 0);
         CHECK_GL_ERROR();
-        DrawSewing(viewMatrix, projectionMatrix, 0, 0, start + spacing * i);						    
+        DrawSewing(viewMatrix, projectionMatrix, 0, 0, start + spacing * i);
         CHECK_GL_ERROR();
 
         glStencilFunc(GL_ALWAYS, 10, -1);
-        DrawStaticGroup(autopsy, viewMatrix, projectionMatrix, 0, 0, start + spacing * i, 0.5f);	    
+        DrawStaticGroup(autopsy, viewMatrix, projectionMatrix, 0, 0, start + spacing * i, 0.5f);
         CHECK_GL_ERROR();
 
         glDisable(GL_CULL_FACE);
 
         glStencilFunc(GL_ALWAYS, 11, -1);
-        DrawUmbrella(viewMatrix, projectionMatrix, 0, 0, start + spacing * i);			        
-        CHECK_GL_ERROR();
-        DrawUmbrella(viewMatrix, projectionMatrix, 0, 0, start + spacing * i, 2);	            
-        CHECK_GL_ERROR();
-        DrawUmbrella(viewMatrix, projectionMatrix, 0, 0, start + spacing * i, 3);	            
-        CHECK_GL_ERROR();
+        for (int j = 1; j <= umbrellaCnt; j++) {
+            DrawUmbrella(viewMatrix, projectionMatrix, 0, 0, start + spacing * i, j);			        
+            CHECK_GL_ERROR();
+        }
     }
 };
 
@@ -719,13 +701,11 @@ void Scene::SetMaterialUniforms(GameObject* object) {
     CHECK_GL_ERROR();
 }
 
-void Scene::ResetSize() {
-    painting_s->m_size = 8.0f;
-    painting_v->m_size = 5.0f;
-    painting_h->m_size = 7.0f;
+void Scene::LoadShaders() {
+    if (shaderProgram.program != 0)
+        pgr::deleteProgramAndShaders(shaderProgram.program);
 
-    pgr::deleteProgramAndShaders(shaderProgram.program);
-    shaderProgram.program = loader.CreateShader("data/shaders/color.vert", "data/shaders/color.frag");
+    shaderProgram.program = loader.CreateShader("data/shaders/lighting.vert", "data/shaders/lighting.frag");
 
     shaderProgram.timeLocation = glGetUniformLocation(shaderProgram.program, "time");
     shaderProgram.colorLocation = glGetAttribLocation(shaderProgram.program, "color");            CHECK_GL_ERROR();
@@ -750,9 +730,17 @@ void Scene::ResetSize() {
     shaderProgram.pointLight1positionLocation = glGetUniformLocation(shaderProgram.program, "pointLight1position");             CHECK_GL_ERROR();
     shaderProgram.spotLight1positionLocation = glGetUniformLocation(shaderProgram.program, "spotLight1position");             CHECK_GL_ERROR();
     shaderProgram.reflectorDirectionLocation = glGetUniformLocation(shaderProgram.program, "reflectorDirection");             CHECK_GL_ERROR();
-
+    shaderProgram.reflectorExponentLocation = glGetUniformLocation(shaderProgram.program, "reflectorExponent");             CHECK_GL_ERROR();
+    shaderProgram.spotCosCutOffLocation = glGetUniformLocation(shaderProgram.program, "spotCosCutOff");             CHECK_GL_ERROR();
 
     shaderProgram.textureTransformLocation = glGetUniformLocation(shaderProgram.program, "textureTransform");               CHECK_GL_ERROR();
     shaderProgram.optionLocation = glGetUniformLocation(shaderProgram.program, "option");               CHECK_GL_ERROR();
+}
 
+void Scene::Reset( bool debug ) {
+    painting_s->m_size = 8.0f;
+    painting_v->m_size = 5.0f;
+    painting_h->m_size = 7.0f;
+    umbrellaCnt = 2;
+    if (debug)  LoadShaders();
 }

@@ -80,6 +80,7 @@ public:
 	float alpha = 0.0f;
 	float time	= 0.0f;
 	float clock = 0.0f;
+	int umbrellaCnt = 2;
 	bool change = false;
 	GLuint painting = 0;
 
@@ -154,11 +155,11 @@ public:
 	void DrawStaticGroup    ( std::vector<GameObject*> group, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, float x = 0, float y = 0, float z = 0, float scale = 1);
 
 	/**
-	* Reset size of paintings to be default.
+	* Reset size of paintings to be default. Resets also shaders if in debug mode.
 	*/
-	void ResetSize			();
+	void Reset		( bool debug = false );
 
-	void DrawLight(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, float x = 0, float y = 0, float z = 0);
+	void DrawLight  ( const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, glm::vec3 position, glm::vec3 direction );
 
 private:
 	/**
@@ -166,6 +167,7 @@ private:
 	*/
 	void SetObjects				( void );
 	void SetMaterials			( void );
+	void LoadShaders			( void );
 	void SetMaterialUniforms	( GameObject* object );
 	void SetTransformUniforms	( const glm::mat4& modelMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix );
 };

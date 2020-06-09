@@ -1,13 +1,4 @@
 #version 140
-// --------------------- structs
-struct Material {    
-  vec3  ambient;
-  vec3  diffuse;
-  vec3  specular;
-  float shininess;
-  bool  useTexture;
-};
-
 // --------------------- attributes
 in vec3 position;
 in vec3 color;
@@ -15,15 +6,12 @@ in vec3 normal;
 in vec2 texCoord;
 
 // --------------------- uniforms
-uniform Material material;
 uniform float time;
 
 uniform mat4 PVMmatrix;
 uniform mat4 Vmatrix;
 uniform mat4 Mmatrix;
 uniform mat4 normalMatrix;
-
-
 
 // --------------------- texture variables
 uniform mat3 textureTransform;

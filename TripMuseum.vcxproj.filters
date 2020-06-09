@@ -41,10 +41,10 @@
     <None Include="data\shaders\skybox.frag">
       <Filter>Data\Shaders</Filter>
     </None>
-    <None Include="data\shaders\color.frag">
+    <None Include="data\shaders\lighting.vert">
       <Filter>Data\Shaders</Filter>
     </None>
-    <None Include="data\shaders\color.vert">
+    <None Include="data\shaders\lighting.frag">
       <Filter>Data\Shaders</Filter>
     </None>
   </ItemGroup>
