@@ -64,7 +64,6 @@ public:
     * @param    ypos  	new mouse vertical position
 	*/
 	void ProcessMouseMovement(float xpos, float ypos, int windowWidth, int windowHeight);
-
 	void updateCameraVectors();
 private:
 };

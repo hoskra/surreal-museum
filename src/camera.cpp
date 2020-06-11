@@ -83,8 +83,8 @@ void Camera::ProcessMouseMovement(float xpos, float ypos, int windowWidth, int w
 {
 	if (firstMouse)
 	{
-		lastX = windowWidth/2;
-		lastY = windowHeight/2;
+		lastX = windowWidth / 2;
+		lastY = windowHeight / 2;
 		firstMouse = false;
 		return;
 	}
@@ -98,7 +98,7 @@ void Camera::ProcessMouseMovement(float xpos, float ypos, int windowWidth, int w
 	Yaw += xoffset;
 	Pitch += yoffset;
 
-	if (Pitch >  89.0f)		Pitch = 89.0f;
+	if (Pitch > 89.0f)		Pitch = 89.0f;
 	if (Pitch < -89.0f)		Pitch = -89.0f;
 
 	updateCameraVectors();

@@ -200,7 +200,7 @@ void onTimer(int)
 			} else {
 				scene->painting++;
 			}
-			std::cout << "painting: " << scene->painting << std::endl;
+			//std::cout << "painting: " << scene->painting << std::endl;
 
 		}
 	}
@@ -288,9 +288,9 @@ void mouseCallback(int buttonPressed, int buttonState, int mouseX, int mouseY)
 
 void specialKeyboardCallback(int specKeyPressed, int mouseX, int mouseY) {
 	switch (specKeyPressed) {
-	case GLUT_KEY_F1:
-		scene->Reset(debug);  
-		break;
+		case GLUT_KEY_F1:
+			scene->Reset();
+			break;
 	}
 }
 
@@ -301,29 +301,32 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 		break;
 	case 'v':
 	case 'V':
-		state.dynamicCamera = state.dynamicCamera ? false : true;
+		if (state.camera != 2) {
+			state.dynamicCamera = state.dynamicCamera ? false : true;
 
-		if (state.dynamicCamera) {
-			glutWarpPointer(state.ww / 2, state.wh / 2);
-			glutPassiveMotionFunc(passiveMouseMotionCallback);
-			glutSetCursor(GLUT_CURSOR_NONE);
-			mainCamera->Yaw		= static_camera.Yaw  ;
-			mainCamera->Pitch	= static_camera.Pitch;
-			mainCamera->updateCameraVectors();
-		} else {
-			glutPassiveMotionFunc(NULL);
-			glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
+
+
+
+			if (state.dynamicCamera) {
+				mainCamera->firstMouse = true;
+				glutPassiveMotionFunc(NULL);
+				glutWarpPointer(state.ww / 2, state.wh / 2);
+				glutPassiveMotionFunc(passiveMouseMotionCallback);
+				glutSetCursor(GLUT_CURSOR_NONE);
+			} else {
+				glutPassiveMotionFunc(NULL);
+				glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
+			}
+
+
 		}
+
 		break;
 	case 'c':
 	case 'C':
 		if (state.camera == 0) {
-			printf("staticCamera1\n");
+			printf("View: Static 1\n");
 			mainCamera = &static_camera;
-			mainCamera->Yaw = 34.5f;
-			mainCamera->Pitch = -30.2f;
-			
-				
 			state.camera = 1;
 			state.pause = false;
 
@@ -333,49 +336,46 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 		}
 		else if (state.camera == 1) {
 
-			printf("freeCameraMode\n");
+			printf("View: Free\n");
 			mainCamera = &camera;
-			mainCamera -> Yaw =	90.0f;
-			mainCamera -> Pitch = - 10.0f;
 			state.pause = false;
-
 			state.dynamicCamera = true;
+			state.camera = 2;
 
-			glutPassiveMotionFunc(passiveMouseMotionCallback);
+			glutPassiveMotionFunc(NULL);
+
 			glutWarpPointer(state.ww / 2, state.wh / 2);
+			glutPassiveMotionFunc(passiveMouseMotionCallback);
 			glutSetCursor(GLUT_CURSOR_NONE);
 
 			mainCamera->Yaw = 90.0f;
 			mainCamera->Pitch = 10.0f;
 		}
 		else if (state.camera == 2) {
-			printf("staticCamera2\n");
+			printf("View: Static 2\n");
 
 			mainCamera = &static_camera_2;
-			mainCamera -> Yaw = 180;
-			mainCamera -> Pitch = 12.8;
-
-			state.camera = 2;
 			state.camera = 3;
 			state.pause = false;
-
 			state.dynamicCamera = false;
+
 			glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
 			glutPassiveMotionFunc(NULL);
 		}
 		else if (state.camera == 3) {
-			printf("dynamic camera mode\n");
-			dynamic_camera.Position.y = 5;
-			mainCamera = &dynamic_camera;
-			mainCamera -> Yaw = 90.0f;
-			mainCamera -> Pitch = -10.0f;
-
+			printf("View: Cart View\n");
+			cart_camera.Position.y = 5;
+			mainCamera = &cart_camera;
+			
 			state.camera = 0;
 			state.pause = false;
-
 			state.dynamicCamera = true;
-			glutPassiveMotionFunc(passiveMouseMotionCallback);
+
+
+			glutPassiveMotionFunc(NULL);
 			glutWarpPointer(state.ww / 2, state.wh / 2);
+
+			glutPassiveMotionFunc(passiveMouseMotionCallback);
 			glutSetCursor(GLUT_CURSOR_NONE);
 
 			mainCamera->Yaw = 90.0f;
