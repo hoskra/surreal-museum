@@ -71,7 +71,7 @@ void onDisplay()
 	glEnable(GL_CULL_FACE);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-	glm::mat4 projectionMatrix	= glm::ortho( glm::radians(state.fieldOfView), state.ww / (float)state.wh, 0.1f, 200.0f );
+	glm::mat4 projectionMatrix	= glm::perspective( glm::radians(state.fieldOfView), state.ww / (float)state.wh, 0.1f, 200.0f );
 	glm::mat4 viewMatrix		= mainCamera->GetViewMatrix(mainCamera->Position, mainCamera->Front, mainCamera->Up);
 
 	glEnable(GL_STENCIL_TEST);
@@ -304,11 +304,12 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 		state.dynamicCamera = state.dynamicCamera ? false : true;
 
 		if (state.dynamicCamera) {
-			glutPassiveMotionFunc(passiveMouseMotionCallback);
 			glutWarpPointer(state.ww / 2, state.wh / 2);
+			glutPassiveMotionFunc(passiveMouseMotionCallback);
 			glutSetCursor(GLUT_CURSOR_NONE);
-			mainCamera->Yaw = 90.0f;
-			mainCamera->Pitch = 10.0f;
+			mainCamera->Yaw		= static_camera.Yaw  ;
+			mainCamera->Pitch	= static_camera.Pitch;
+			mainCamera->updateCameraVectors();
 		} else {
 			glutPassiveMotionFunc(NULL);
 			glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
@@ -319,6 +320,10 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 		if (state.camera == 0) {
 			printf("staticCamera1\n");
 			mainCamera = &static_camera;
+			mainCamera->Yaw = 34.5f;
+			mainCamera->Pitch = -30.2f;
+			
+				
 			state.camera = 1;
 			state.pause = false;
 
@@ -330,7 +335,8 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 
 			printf("freeCameraMode\n");
 			mainCamera = &camera;
-			state.camera = 2;
+			mainCamera -> Yaw =	90.0f;
+			mainCamera -> Pitch = - 10.0f;
 			state.pause = false;
 
 			state.dynamicCamera = true;
@@ -346,6 +352,10 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 			printf("staticCamera2\n");
 
 			mainCamera = &static_camera_2;
+			mainCamera -> Yaw = 180;
+			mainCamera -> Pitch = 12.8;
+
+			state.camera = 2;
 			state.camera = 3;
 			state.pause = false;
 
@@ -357,6 +367,9 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 			printf("dynamic camera mode\n");
 			dynamic_camera.Position.y = 5;
 			mainCamera = &dynamic_camera;
+			mainCamera -> Yaw = 90.0f;
+			mainCamera -> Pitch = -10.0f;
+
 			state.camera = 0;
 			state.pause = false;
 

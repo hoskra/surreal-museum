@@ -65,6 +65,6 @@ public:
 	*/
 	void ProcessMouseMovement(float xpos, float ypos, int windowWidth, int windowHeight);
 
-private:
 	void updateCameraVectors();
+private:
 };
