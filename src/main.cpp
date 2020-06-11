@@ -44,6 +44,7 @@ struct GameState {
 	float speed			= CART_SPEED;
 	float speedStep		= SPEED_STEP;
 	char camera			= 3;
+	bool dynamicCamera	= false;
 	float fieldOfView	= CAMERA_FOV_MAX;
 
 	bool pause			= false;
@@ -70,7 +71,7 @@ void onDisplay()
 	glEnable(GL_CULL_FACE);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-	glm::mat4 projectionMatrix	= glm::perspective( glm::radians(state.fieldOfView), state.ww / (float)state.wh, 0.1f, 100.0f );
+	glm::mat4 projectionMatrix	= glm::ortho( glm::radians(state.fieldOfView), state.ww / (float)state.wh, 0.1f, 200.0f );
 	glm::mat4 viewMatrix		= mainCamera->GetViewMatrix(mainCamera->Position, mainCamera->Front, mainCamera->Up);
 
 	glEnable(GL_STENCIL_TEST);
@@ -120,7 +121,7 @@ void onDisplay()
 	}
 
 	// mouse pointer
-	if (state.camera == 0 || state.camera == 2) {
+	if (state.dynamicCamera) {
 		ptr->Draw();
 	}
 
@@ -298,13 +299,30 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 	case 27:
 		glutLeaveMainLoop();
 		break;
+	case 'v':
+	case 'V':
+		state.dynamicCamera = state.dynamicCamera ? false : true;
+
+		if (state.dynamicCamera) {
+			glutPassiveMotionFunc(passiveMouseMotionCallback);
+			glutWarpPointer(state.ww / 2, state.wh / 2);
+			glutSetCursor(GLUT_CURSOR_NONE);
+			mainCamera->Yaw = 90.0f;
+			mainCamera->Pitch = 10.0f;
+		} else {
+			glutPassiveMotionFunc(NULL);
+			glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
+		}
+		break;
 	case 'c':
+	case 'C':
 		if (state.camera == 0) {
 			printf("staticCamera1\n");
 			mainCamera = &static_camera;
 			state.camera = 1;
 			state.pause = false;
 
+			state.dynamicCamera = false;
 			glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
 			glutPassiveMotionFunc(NULL);
 		}
@@ -314,6 +332,8 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 			mainCamera = &camera;
 			state.camera = 2;
 			state.pause = false;
+
+			state.dynamicCamera = true;
 
 			glutPassiveMotionFunc(passiveMouseMotionCallback);
 			glutWarpPointer(state.ww / 2, state.wh / 2);
@@ -329,6 +349,7 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 			state.camera = 3;
 			state.pause = false;
 
+			state.dynamicCamera = false;
 			glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
 			glutPassiveMotionFunc(NULL);
 		}
@@ -339,6 +360,7 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 			state.camera = 0;
 			state.pause = false;
 
+			state.dynamicCamera = true;
 			glutPassiveMotionFunc(passiveMouseMotionCallback);
 			glutWarpPointer(state.ww / 2, state.wh / 2);
 			glutSetCursor(GLUT_CURSOR_NONE);
@@ -368,22 +390,22 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 		scene->Reset(debug);  break;
 	case 'w':
 	case 'W':
-		if (state.camera == 2) mainCamera->ProcessKeyboard(0, state.deltaTime); break;
+		if (state.dynamicCamera && state.camera != 0) mainCamera->ProcessKeyboard(0, state.deltaTime); break;
 	case 'a':
 	case 'A':
-		if (state.camera == 2) mainCamera->ProcessKeyboard(2, state.deltaTime); break;
+		if (state.dynamicCamera && state.camera != 0) mainCamera->ProcessKeyboard(2, state.deltaTime); break;
 	case 's':
 	case 'S':
-		if (state.camera == 2) mainCamera->ProcessKeyboard(1, state.deltaTime); break;
+		if (state.dynamicCamera && state.camera != 0) mainCamera->ProcessKeyboard(1, state.deltaTime); break;
 	case 'd':
 	case 'D':
-		if (state.camera == 2) mainCamera->ProcessKeyboard(3, state.deltaTime); break;
+		if (state.dynamicCamera && state.camera != 0) mainCamera->ProcessKeyboard(3, state.deltaTime); break;
 	case 'e':
 	case 'E':
-		if (state.camera == 2) mainCamera->ProcessKeyboard(4, state.deltaTime); break;
+		if (state.dynamicCamera && state.camera != 0) mainCamera->ProcessKeyboard(4, state.deltaTime); break;
 	case 'q':
 	case 'Q':
-		if (state.camera == 2) mainCamera->ProcessKeyboard(5, state.deltaTime); break;
+		if (state.dynamicCamera && state.camera != 0) mainCamera->ProcessKeyboard(5, state.deltaTime); break;
 	case 43:
 		state.speed += state.speedStep;
 		if (state.speed >= SPEED_MAX) state.speed = SPEED_MAX;
