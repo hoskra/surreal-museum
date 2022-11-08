@@ -3,9 +3,9 @@
 Semestral work for OpenGL graphics course.
 
 <p float="left">
-  <img src="doc_img/Screenshot1.png" width="250" />
-  <img src="doc_img/Screenshot2.png" width="250" />
-  <img src="doc_img/Screenshot3.png" width="250" />
+  <img src="doc_img/screenshot1.png" width="250" />
+  <img src="doc_img/screenshot2.png" width="250" />
+  <img src="doc_img/screenshot3.png" width="250" />
 </p>
 
 
